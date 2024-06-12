@@ -6,10 +6,12 @@ definitions:
           $ref: '#/definitions/reservation.ReservationRes'
         type: array
     type: object
-  reservation.GetByIdReq:
+  reservation.GetAllRestaurantRes:
     properties:
-      id:
-        type: string
+      restaurant:
+        items:
+          $ref: '#/definitions/reservation.Restaurant'
+        type: array
     type: object
   reservation.Reservation:
     properties:
@@ -48,13 +50,6 @@ definitions:
       user:
         $ref: '#/definitions/reservation.UserGetByIdResp'
     type: object
-  reservation.ReservationUpdate:
-    properties:
-      id:
-        $ref: '#/definitions/reservation.GetByIdReq'
-      updateReservation:
-        $ref: '#/definitions/reservation.ReservationReq'
-    type: object
   reservation.Restaurant:
     properties:
       address:
@@ -62,6 +57,17 @@ definitions:
       description:
         type: string
       id:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  reservation.RestaurantReq:
+    properties:
+      address:
+        type: string
+      description:
         type: string
       name:
         type: string
@@ -165,7 +171,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/reservation.GetByIdReq'
+            $ref: '#/definitions/reservation.ReservationRes'
         "401":
           description: Unauthorized
           schema:
@@ -198,14 +204,14 @@ paths:
         name: reservation
         required: true
         schema:
-          $ref: '#/definitions/reservation.ReservationUpdate'
+          $ref: '#/definitions/reservation.ReservationReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/reservation.ReservationUpdate'
+            $ref: '#/definitions/reservation.ReservationReq'
         "401":
           description: Unauthorized
           schema:
@@ -265,6 +271,177 @@ paths:
       summary: Get all reservations
       tags:
       - reservation
+  /restaurant:
+    post:
+      consumes:
+      - application/json
+      description: Create a new restaurant
+      parameters:
+      - description: Restaurant data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.RestaurantReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.Restaurant'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create restaurant
+      tags:
+      - restaurant
+  /restaurant/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a restaurant by ID
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Restaurant deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid restaurant ID
+          schema:
+            type: string
+        "404":
+          description: Restaurant not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete restaurant
+      tags:
+      - restaurant
+    get:
+      consumes:
+      - application/json
+      description: Get a restaurant by ID
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.Restaurant'
+        "400":
+          description: Invalid restaurant ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get restaurant
+      tags:
+      - restaurant
+    put:
+      consumes:
+      - application/json
+      description: Update an existing restaurant
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated restaurant data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.RestaurantReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.RestaurantReq'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Restaurant not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update restaurant
+      tags:
+      - restaurant
+  /restaurants:
+    get:
+      consumes:
+      - application/json
+      description: Get all restaurants
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.GetAllRestaurantRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all restaurants
+      tags:
+      - restaurant
 securityDefinitions:
   BearerAuth:
     in: header

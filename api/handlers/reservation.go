@@ -43,7 +43,7 @@ func (h *HTTPHandler) ReservationCreate(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Reservation ID"
-// @Success 200 {object} pbr.GetByIdReq
+// @Success 200 {object} pbr.ReservationRes
 // @Failure 401 {object} string "Unauthorized"
 // @Failure 404 {object} string "Reservation not found"
 // @Failure 500 {object} string "Server error"
@@ -66,8 +66,8 @@ func (h *HTTPHandler) ReservationGet(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Reservation ID"
-// @Param reservation body pbr.ReservationUpdate true "Updated reservation data"
-// @Success 200 {object} pbr.ReservationUpdate
+// @Param reservation body pbr.ReservationReq true "Updated reservation data"
+// @Success 200 {object} pbr.ReservationReq
 // @Failure 401 {object} string "Unauthorized"
 // @Failure 404 {object} string "Reservation not found"
 // @Failure 500 {object} string "Server error"
@@ -132,15 +132,25 @@ func (h *HTTPHandler) ReservationGetAll(c *gin.Context) {
 	user_id := c.Query("user_id")
 	limitStr := c.Query("limit")
 	offsetStr := c.Query("offset")
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit parameter"})
-		return
+	var limit, offset int
+	var err error
+	if limitStr == "" {
+		limit = 10
+	} else {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit parameter"})
+			return
+		}
 	}
-	offset, err := strconv.Atoi(offsetStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset parameter"})
-		return
+	if offsetStr == "" {
+		offset = 0
+	} else {
+		offset, err = strconv.Atoi(offsetStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset parameter"})
+			return
+		}
 	}
 
 	res, err := h.Reservation.GetAll(context.Background(), &pbr.GetAllReservationReq{
