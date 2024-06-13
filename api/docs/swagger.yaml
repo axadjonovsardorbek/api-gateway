@@ -963,4 +963,9 @@ paths:
       summary: Get all restaurants
       tags:
       - restaurant
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

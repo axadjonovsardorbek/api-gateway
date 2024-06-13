@@ -24,13 +24,19 @@ import (
 // @Security BearerAuth
 // @Router /reservation_order [post]
 func (h *HTTPHandler) ReservationOrderCreate(c *gin.Context) {
-	var req pbr.ReservationOrderReq
-	if err := c.BindJSON(&req); err != nil {
+	var req pbr.ReservationOrderUpdateReq
+	if err := c.BindJSON(&req.Update); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	res, err := h.ReservationOrder.Create(context.Background(), &req)
+	var reqq pbr.ReservationOrderReq
+
+	reqq.ReservationId = req.Update.ReservationId
+	reqq.MenuItemId = req.Update.MenuItemId
+	reqq.Quantity = req.Update.Quantity
+
+	res, err := h.ReservationOrder.Create(context.Background(), &reqq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
