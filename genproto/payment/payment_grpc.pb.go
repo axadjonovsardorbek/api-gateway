@@ -25,7 +25,6 @@ type PaymentServiceClient interface {
 	GetById(ctx context.Context, in *PaymentGetByIdReq, opts ...grpc.CallOption) (*PaymentGetByIdResp, error)
 	Create(ctx context.Context, in *PaymentCreateReq, opts ...grpc.CallOption) (*PaymentGetByIdResp, error)
 	Update(ctx context.Context, in *PaymentUpdateReq, opts ...grpc.CallOption) (*PaymentGetByIdResp, error)
-	Delete(ctx context.Context, in *PaymentGetByIdReq, opts ...grpc.CallOption) (*Void, error)
 }
 
 type paymentServiceClient struct {
@@ -63,15 +62,6 @@ func (c *paymentServiceClient) Update(ctx context.Context, in *PaymentUpdateReq,
 	return out, nil
 }
 
-func (c *paymentServiceClient) Delete(ctx context.Context, in *PaymentGetByIdReq, opts ...grpc.CallOption) (*Void, error) {
-	out := new(Void)
-	err := c.cc.Invoke(ctx, "/payment.PaymentService/Delete", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // PaymentServiceServer is the server API for PaymentService service.
 // All implementations must embed UnimplementedPaymentServiceServer
 // for forward compatibility
@@ -79,7 +69,6 @@ type PaymentServiceServer interface {
 	GetById(context.Context, *PaymentGetByIdReq) (*PaymentGetByIdResp, error)
 	Create(context.Context, *PaymentCreateReq) (*PaymentGetByIdResp, error)
 	Update(context.Context, *PaymentUpdateReq) (*PaymentGetByIdResp, error)
-	Delete(context.Context, *PaymentGetByIdReq) (*Void, error)
 	mustEmbedUnimplementedPaymentServiceServer()
 }
 
@@ -95,9 +84,6 @@ func (UnimplementedPaymentServiceServer) Create(context.Context, *PaymentCreateR
 }
 func (UnimplementedPaymentServiceServer) Update(context.Context, *PaymentUpdateReq) (*PaymentGetByIdResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
-}
-func (UnimplementedPaymentServiceServer) Delete(context.Context, *PaymentGetByIdReq) (*Void, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedPaymentServiceServer) mustEmbedUnimplementedPaymentServiceServer() {}
 
@@ -166,24 +152,6 @@ func _PaymentService_Update_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PaymentGetByIdReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PaymentServiceServer).Delete(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/payment.PaymentService/Delete",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).Delete(ctx, req.(*PaymentGetByIdReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // PaymentService_ServiceDesc is the grpc.ServiceDesc for PaymentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,10 +170,6 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _PaymentService_Update_Handler,
-		},
-		{
-			MethodName: "Delete",
-			Handler:    _PaymentService_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

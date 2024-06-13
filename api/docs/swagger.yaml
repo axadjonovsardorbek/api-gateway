@@ -1,4 +1,42 @@
 definitions:
+  payment.PaymentCreateReq:
+    properties:
+      amount:
+        type: number
+      payment_method:
+        type: string
+      payment_status:
+        type: string
+      reservation_id:
+        type: string
+    type: object
+  payment.PaymentGetByIdResp:
+    properties:
+      amount:
+        type: number
+      id:
+        type: string
+      payment_method:
+        type: string
+      payment_status:
+        type: string
+      reservation_id:
+        type: string
+    type: object
+  reservation.GetAllMenuRes:
+    properties:
+      menu:
+        items:
+          $ref: '#/definitions/reservation.MenuRes'
+        type: array
+    type: object
+  reservation.GetAllReservationOrderRes:
+    properties:
+      reservation_order:
+        items:
+          $ref: '#/definitions/reservation.ReservationOrderRes'
+        type: array
+    type: object
   reservation.GetAllReservationRes:
     properties:
       reservation:
@@ -13,6 +51,43 @@ definitions:
           $ref: '#/definitions/reservation.Restaurant'
         type: array
     type: object
+  reservation.Menu:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      restaurant_id:
+        type: string
+    type: object
+  reservation.MenuReq:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      restaurant_id:
+        type: string
+    type: object
+  reservation.MenuRes:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      restaurant:
+        $ref: '#/definitions/reservation.Restaurant'
+    type: object
   reservation.Reservation:
     properties:
       id:
@@ -25,6 +100,28 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  reservation.ReservationOrderReq:
+    properties:
+      id:
+        type: string
+      menu_item_id:
+        type: string
+      quantity:
+        type: string
+      reservation_id:
+        type: string
+    type: object
+  reservation.ReservationOrderRes:
+    properties:
+      id:
+        type: string
+      menu_item:
+        $ref: '#/definitions/reservation.MenuRes'
+      quantity:
+        type: string
+      reservation:
+        $ref: '#/definitions/reservation.ReservationRes'
     type: object
   reservation.ReservationReq:
     properties:
@@ -48,7 +145,7 @@ definitions:
       status:
         type: string
       user:
-        $ref: '#/definitions/reservation.UserGetByIdResp'
+        $ref: '#/definitions/reservation.UserResp'
     type: object
   reservation.Restaurant:
     properties:
@@ -74,13 +171,11 @@ definitions:
       phone_number:
         type: string
     type: object
-  reservation.UserGetByIdResp:
+  reservation.UserResp:
     properties:
       email:
         type: string
       id:
-        type: string
-      password:
         type: string
       username:
         type: string
@@ -88,6 +183,252 @@ definitions:
 info:
   contact: {}
 paths:
+  /menu:
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu item
+      parameters:
+      - description: Menu data
+        in: body
+        name: menu
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.MenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.Menu'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create menu item
+      tags:
+      - menu
+  /menu/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a menu item by ID
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Menu item deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid menu item ID
+          schema:
+            type: string
+        "404":
+          description: Menu item not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete menu item
+      tags:
+      - menu
+    get:
+      consumes:
+      - application/json
+      description: Get a menu item by ID
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.MenuRes'
+        "400":
+          description: Invalid menu item ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get menu item
+      tags:
+      - menu
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu item
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated menu item data
+        in: body
+        name: menu
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.MenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.Menu'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Menu item not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update menu item
+      tags:
+      - menu
+  /menus:
+    get:
+      consumes:
+      - application/json
+      description: Get all menu items
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.GetAllMenuRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all menu items
+      tags:
+      - menu
+  /payment/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a payment by ID
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payment.PaymentGetByIdResp'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Payment not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get payment
+      tags:
+      - payment
+    put:
+      consumes:
+      - application/json
+      description: Update a payment by id
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated payment data
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/payment.PaymentCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payment.PaymentGetByIdResp'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Payment not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update payment
+      tags:
+      - payment
   /reservation:
     post:
       consumes:
@@ -229,6 +570,177 @@ paths:
       summary: Update reservation
       tags:
       - reservation
+  /reservation_order:
+    post:
+      consumes:
+      - application/json
+      description: Create a new reservation order
+      parameters:
+      - description: Reservation order data
+        in: body
+        name: reservation_order
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.ReservationOrderReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.ReservationOrderRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create reservation order
+      tags:
+      - reservation_order
+  /reservation_order/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a reservation order by ID
+      parameters:
+      - description: Reservation order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Reservation order deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid reservation order ID
+          schema:
+            type: string
+        "404":
+          description: Reservation order not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete reservation order
+      tags:
+      - reservation_order
+    get:
+      consumes:
+      - application/json
+      description: Get a reservation order by ID
+      parameters:
+      - description: Reservation order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.ReservationOrderRes'
+        "400":
+          description: Invalid reservation order ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get reservation order
+      tags:
+      - reservation_order
+    put:
+      consumes:
+      - application/json
+      description: Update an existing reservation order
+      parameters:
+      - description: Reservation order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated reservation order data
+        in: body
+        name: reservation_order
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.ReservationOrderReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.ReservationOrderRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Reservation order not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update reservation order
+      tags:
+      - reservation_order
+  /reservation_orders:
+    get:
+      consumes:
+      - application/json
+      description: Get all reservation orders
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.GetAllReservationOrderRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all reservation orders
+      tags:
+      - reservation_order
   /reservations:
     get:
       consumes:

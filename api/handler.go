@@ -1,8 +1,6 @@
 package api
 
 import (
-	// "github.com/gin-contrib/cors"
-
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 
@@ -27,12 +25,34 @@ func NewRouter(connR, connP *grpc.ClientConn, logger logger.Logger) *gin.Engine 
 
 	protected := router.Group("/", middleware.JWTMiddleware())
 
+	// Reservation routes
 	reservation := protected.Group("/reservation")
 	reservation.POST("/", h.ReservationCreate)
 	reservation.GET("/:id", h.ReservationGet)
 	reservation.PUT("/:id", h.ReservationUpdate)
 	reservation.DELETE("/:id", h.ReservationDelete)
 	protected.GET("/reservations", h.ReservationGetAll)
+
+	// Restaurant routes
+	restaurant := protected.Group("/restaurant")
+	restaurant.POST("/", h.RestaurantCreate)
+	restaurant.GET("/:id", h.RestaurantGet)
+	restaurant.PUT("/:id", h.RestaurantUpdate)
+	restaurant.DELETE("/:id", h.RestaurantDelete)
+	protected.GET("/restaurants", h.RestaurantGetAll)
+
+	// Menu routes
+	menu := protected.Group("/menu")
+	menu.POST("/", h.MenuCreate)
+	menu.GET("/:id", h.MenuGet)
+	menu.PUT("/:id", h.MenuUpdate)
+	menu.DELETE("/:id", h.MenuDelete)
+	protected.GET("/menus", h.MenuGetAll)
+
+	// Payment routes
+	payment := protected.Group("/payment")
+	payment.GET("/:id", h.GetPaymentByID)
+	payment.PUT("/:id", h.UpdatePayment)
 
 	return router
 }

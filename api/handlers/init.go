@@ -9,17 +9,21 @@ import (
 )
 
 type HTTPHandler struct {
-	Reservation pbr.ReservationServiceClient
-	Restaurant  pbr.RestaurantServiceClient
-	Payment     pbp.PaymentServiceClient
-	Logger      logger.Logger
+	Reservation      pbr.ReservationServiceClient
+	Restaurant       pbr.RestaurantServiceClient
+	Payment          pbp.PaymentServiceClient
+	Menu             pbr.MenuServiceClient
+	ReservationOrder pbr.ReservationOrderServiceClient
+	Logger           logger.Logger
 }
 
 func NewHandler(connR, connP *grpc.ClientConn, l logger.Logger) *HTTPHandler {
 	return &HTTPHandler{
-		Reservation: pbr.NewReservationServiceClient(connR),
-		Restaurant:  pbr.NewRestaurantServiceClient(connR),
-		Payment:     pbp.NewPaymentServiceClient(connR),
-		Logger:      l,
+		Reservation:      pbr.NewReservationServiceClient(connR),
+		Restaurant:       pbr.NewRestaurantServiceClient(connR),
+		Payment:          pbp.NewPaymentServiceClient(connP),
+		Menu:             pbr.NewMenuServiceClient(connR),
+		ReservationOrder: pbr.NewReservationOrderServiceClient(connR),
+		Logger:           l,
 	}
 }
