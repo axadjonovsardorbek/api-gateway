@@ -78,7 +78,7 @@ func (h *HTTPHandler) MenuUpdate(c *gin.Context) {
 	id := c.Param("id")
 	var req pbr.MenuUpdate
 
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.BindJSON(&req.UpdateMenu); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
