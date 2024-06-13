@@ -34,3 +34,6 @@
 [INFO]  2024/06/13 13:59:29 main.go:36: Server started on port: :8080
 [INFO]  2024/06/13 14:00:03 main.go:36: Server started on port: :8080
 [INFO]  2024/06/13 14:04:34 main.go:36: Server started on port: :8080
+[INFO]  2024/06/13 14:22:30 main.go:36: Server started on port: :8080
+[INFO]  2024/06/13 14:24:42 main.go:36: Server started on port: :8080
+[INFO]  2024/06/13 14:32:29 main.go:36: Server started on port: :8080
