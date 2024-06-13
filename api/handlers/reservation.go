@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -178,19 +179,25 @@ func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
 		return
 	}
 
-	// dateTimeLayout := "2006-01-02 15:04:05"
+	dateTimeLayout := "2006-01-02 15:04:05"
 
-	// Parse the incoming date time string
-	// parsedDateTime, err := time.Parse(dateTimeLayout, check.DateTime)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
-	// 	return
-	// }
-	// resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.String(), RestauranId: check.RestaurantID})
-	// if err != nil {
-	// 	if err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
-	// 		return
-	// 	}
-	// }
+	parsedDateTime, err := time.Parse(dateTimeLayout, check.DateTime)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
+		return
+	}
+	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.String(), RestauranId: check.RestaurantID})
+	if err != nil {
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
+			return
+		}
+	}
+	if resp.IsBooked {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Restaurant is booked"})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Restaurant is available"})
+		return
+	}
 }
