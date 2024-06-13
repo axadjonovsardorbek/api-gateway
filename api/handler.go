@@ -33,6 +33,14 @@ func NewRouter(connR, connP *grpc.ClientConn, logger logger.Logger) *gin.Engine 
 	reservation.DELETE("/:id", h.ReservationDelete)
 	protected.GET("/reservations", h.ReservationGetAll)
 
+	// Reservation-order routes
+	reservationOrder := protected.Group("/reservation-order")
+	reservationOrder.POST("/", h.ReservationOrderCreate)
+	reservationOrder.GET("/:id", h.ReservationOrderGet)
+	reservationOrder.PUT("/:id", h.ReservationOrderUpdate)
+	reservationOrder.DELETE("/:id", h.ReservationOrderDelete)
+	protected.GET("/reservation_orders", h.ReservationOrderGetAll)
+
 	// Restaurant routes
 	restaurant := protected.Group("/restaurant")
 	restaurant.POST("/", h.RestaurantCreate)
