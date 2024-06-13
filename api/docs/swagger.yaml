@@ -123,6 +123,15 @@ definitions:
       reservation:
         $ref: '#/definitions/reservation.ReservationRes'
     type: object
+  reservation.ReservationOrderUpdate:
+    properties:
+      menu_item_id:
+        type: string
+      quantity:
+        type: string
+      reservation_id:
+        type: string
+    type: object
   reservation.ReservationReq:
     properties:
       reservation_time:
@@ -581,7 +590,7 @@ paths:
         name: reservation_order
         required: true
         schema:
-          $ref: '#/definitions/reservation.ReservationOrderReq'
+          $ref: '#/definitions/reservation.ReservationOrderUpdate'
       produces:
       - application/json
       responses:
@@ -954,9 +963,4 @@ paths:
       summary: Get all restaurants
       tags:
       - restaurant
-securityDefinitions:
-  BearerAuth:
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

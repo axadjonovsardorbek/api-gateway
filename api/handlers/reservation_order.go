@@ -17,7 +17,7 @@ import (
 // @Tags reservation_order
 // @Accept json
 // @Produce json
-// @Param reservation_order body pbr.ReservationOrderReq true "Reservation order data"
+// @Param reservation_order body pbr.ReservationOrderUpdate true "Reservation order data"
 // @Success 200 {object} pbr.ReservationOrderRes
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"

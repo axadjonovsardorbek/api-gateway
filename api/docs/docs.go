@@ -647,7 +647,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/reservation.ReservationOrderReq"
+                            "$ref": "#/definitions/reservation.ReservationOrderUpdate"
                         }
                     }
                 ],
@@ -1420,6 +1420,20 @@ const docTemplate = `{
                 }
             }
         },
+        "reservation.ReservationOrderUpdate": {
+            "type": "object",
+            "properties": {
+                "menu_item_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "reservation_id": {
+                    "type": "string"
+                }
+            }
+        },
         "reservation.ReservationReq": {
             "type": "object",
             "properties": {
@@ -1507,13 +1521,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        }
-    },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }`
