@@ -101,17 +101,6 @@ definitions:
       user_id:
         type: string
     type: object
-  reservation.ReservationOrderReq:
-    properties:
-      id:
-        type: string
-      menu_item_id:
-        type: string
-      quantity:
-        type: string
-      reservation_id:
-        type: string
-    type: object
   reservation.ReservationOrderRes:
     properties:
       id:
@@ -691,14 +680,14 @@ paths:
         name: reservation_order
         required: true
         schema:
-          $ref: '#/definitions/reservation.ReservationOrderReq'
+          $ref: '#/definitions/reservation.ReservationOrderUpdate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/reservation.ReservationOrderRes'
+            $ref: '#/definitions/reservation.ReservationOrderUpdate'
         "400":
           description: Invalid request payload
           schema:

@@ -166,3 +166,31 @@ func (h *HTTPHandler) ReservationGetAll(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, res)
 }
+
+func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
+	type checkModel struct {
+		RestaurantID string `json:"restaurant_id"`
+		DateTime     string `json:"date_time"`
+	}
+	var check checkModel
+	if err := c.BindJSON(&check); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload", "details": err.Error()})
+		return
+	}
+
+	// dateTimeLayout := "2006-01-02 15:04:05"
+
+	// Parse the incoming date time string
+	// parsedDateTime, err := time.Parse(dateTimeLayout, check.DateTime)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
+	// 	return
+	// }
+	// resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.String(), RestauranId: check.RestaurantID})
+	// if err != nil {
+	// 	if err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
+	// 		return
+	// 	}
+	// }
+}

@@ -73,8 +73,8 @@ func (h *HTTPHandler) ReservationOrderGet(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Reservation order ID"
-// @Param reservation_order body pbr.ReservationOrderReq true "Updated reservation order data"
-// @Success 200 {object} pbr.ReservationOrderRes
+// @Param reservation_order body pbr.ReservationOrderUpdate true "Updated reservation order data"
+// @Success 200 {object} pbr.ReservationOrderUpdate
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 404 {object} string "Reservation order not found"
 // @Failure 500 {object} string "Server error"
