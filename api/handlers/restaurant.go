@@ -75,15 +75,14 @@ func (h *HTTPHandler) RestaurantGet(c *gin.Context) {
 // @Router /restaurant/{id} [put]
 func (h *HTTPHandler) RestaurantUpdate(c *gin.Context) {
 	id := c.Param("id")
-	var req pbr.RestaurantUpdate
+	req := &pbr.RestaurantUpdate{}
 
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.BindJSON(&req.UpdateRestaurant); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-
 	req.Id = &pbr.GetByIdReq{Id: id}
-	res, err := h.Restaurant.Update(context.Background(), &req)
+	res, err := h.Restaurant.Update(context.Background(), req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update restaurant", "details": err.Error()})
 		return

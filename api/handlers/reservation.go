@@ -76,7 +76,7 @@ func (h *HTTPHandler) ReservationGet(c *gin.Context) {
 func (h *HTTPHandler) ReservationUpdate(c *gin.Context) {
 	id := c.Param("id")
 	var req pbr.ReservationUpdate
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.BindJSON(&req.UpdateReservation); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
