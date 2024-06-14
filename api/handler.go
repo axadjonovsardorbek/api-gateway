@@ -34,6 +34,7 @@ func NewRouter(connR, connP *grpc.ClientConn, logger logger.Logger) *gin.Engine 
 	protected.GET("/reservations", h.ReservationGetAll)
 	reservation.POST("/check/", h.ReservationCheck)
 	reservation.POST("/payment/", h.PaymentHandler)
+	reservation.GET("/menu/", h.GetMenu)
 
 	// Reservation-order routes
 	reservationOrder := protected.Group("/reservation_order")

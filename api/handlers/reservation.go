@@ -190,7 +190,7 @@ func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
 		return
 	}
 
-	if req.RestauranId == "" || req.Time == "" {
+	if req.RestaurantId == "" || req.Time == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required path parameters"})
 		return
 	}
@@ -202,7 +202,7 @@ func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.Format("2006-01-02 15:04:05"), RestauranId: req.RestauranId})
+	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.Format("2006-01-02 15"), RestaurantId: req.RestaurantId})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -227,7 +227,7 @@ func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
 // @Failure 401 {object} string "Unauthorized"
 // @Failure 500 {object} string "Server error"
 // @Security BearerAuth
-// @Router /reservations/{id}/payment [post]
+// @Router /reservation/payment [post]
 func (h *HTTPHandler) PaymentHandler(c *gin.Context) {
 	req := pbp.PaymentCreateReq{}
 
@@ -241,5 +241,30 @@ func (h *HTTPHandler) PaymentHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, res)
+}
+
+// GetMenu godoc
+// @Summary Get menu for a reservation
+// @Description Get menu for a reservation
+// @Tags reservation
+// @Accept json
+// @Produce json
+// @Param restaurant_id query pbr.GetMenuReq true "Get Menu data"
+// @Success 200 {object} pbr.GetAllMenuRess
+// @Failure 400 {object} string "Invalid parameters"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Server error"
+// @Security BearerAuth
+// @Router /reservation/menu [get]
+func (h *HTTPHandler) GetMenu(c *gin.Context) {
+	id := c.Query("restaurant_id")
+
+	res, err := h.Reservation.GetMenu(context.Background(), &pbr.GetMenuReq{RestaurantId: id})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, res)
 }

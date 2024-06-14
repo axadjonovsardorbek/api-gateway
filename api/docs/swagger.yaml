@@ -25,7 +25,7 @@ definitions:
     type: object
   reservation.CheckTimeReq:
     properties:
-      restauran_id:
+      restaurant_id:
         type: string
       time:
         type: string
@@ -40,6 +40,13 @@ definitions:
       menu:
         items:
           $ref: '#/definitions/reservation.MenuRes'
+        type: array
+    type: object
+  reservation.GetAllMenuRess:
+    properties:
+      menus:
+        items:
+          $ref: '#/definitions/reservation.GetMenuRes'
         type: array
     type: object
   reservation.GetAllReservationOrderRes:
@@ -62,6 +69,17 @@ definitions:
         items:
           $ref: '#/definitions/reservation.Restaurant'
         type: array
+    type: object
+  reservation.GetMenuRes:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
     type: object
   reservation.Menu:
     properties:
@@ -616,6 +634,75 @@ paths:
       summary: Check reservations
       tags:
       - reservation
+  /reservation/menu:
+    get:
+      consumes:
+      - application/json
+      description: Get menu for a reservation
+      parameters:
+      - in: query
+        name: restaurant_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.GetAllMenuRess'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get menu for a reservation
+      tags:
+      - reservation
+  /reservation/payment:
+    post:
+      consumes:
+      - application/json
+      description: Process payment for a reservation
+      parameters:
+      - description: Payment data
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/payment.PaymentCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payment.PaymentGetByIdResp'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Process payment for a reservation
+      tags:
+      - reservation
   /reservation_order:
     post:
       consumes:
@@ -827,42 +914,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Get all reservations
-      tags:
-      - reservation
-  /reservations/{id}/payment:
-    post:
-      consumes:
-      - application/json
-      description: Process payment for a reservation
-      parameters:
-      - description: Payment data
-        in: body
-        name: payment
-        required: true
-        schema:
-          $ref: '#/definitions/payment.PaymentCreateReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/payment.PaymentGetByIdResp'
-        "400":
-          description: Invalid parameters
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "500":
-          description: Server error
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Process payment for a reservation
       tags:
       - reservation
   /restaurant:
