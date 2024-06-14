@@ -3,6 +3,7 @@ package handlers
 import (
 	pbr "api-gateway/genproto/reservation"
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -168,36 +169,47 @@ func (h *HTTPHandler) ReservationGetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// ReservationCheck godoc
+// @Summary Check reservations
+// @Description Check reservations
+// @Tags reservation
+// @Accept json
+// @Produce json
+// @Param restaurant_id path string true "Restaurant ID"
+// @Param reservation_time path string true "Reservation time"
+// @Success 200 {object} pbr.CheckTimeResp
+// @Failure 400 {object} string "Invalid parameters"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Server error"
+// @Security BearerAuth
+// @Router /reservation/check/{restaurant_id}/{reservation_time} [post]
 func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
-	type checkModel struct {
-		RestaurantID string `json:"restaurant_id"`
-		DateTime     string `json:"date_time"`
-	}
-	var check checkModel
-	if err := c.BindJSON(&check); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload", "details": err.Error()})
+	restaurantId := c.Param("restaurant_id")
+	timeParam := c.Param("reservation_time")
+
+	if restaurantId == "" || timeParam == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required path parameters"})
 		return
 	}
 
 	dateTimeLayout := "2006-01-02 15:04:05"
-
-	parsedDateTime, err := time.Parse(dateTimeLayout, check.DateTime)
+	parsedDateTime, err := time.Parse(dateTimeLayout, timeParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
 		return
 	}
-	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.String(), RestauranId: check.RestaurantID})
+
+	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.Format("2006-01-02 15:04:05"), RestauranId: restaurantId})
 	if err != nil {
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
-			return
-		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+
+	fmt.Println("gggggggggggggggggggggggggggggggggggggG", resp.IsBooked)
+
 	if resp.IsBooked {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Restaurant is booked"})
-		return
-	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Restaurant is available"})
-		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"error": "Restaurant is booked"})
 	}
 }

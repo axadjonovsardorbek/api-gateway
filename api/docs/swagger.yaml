@@ -23,6 +23,11 @@ definitions:
       reservation_id:
         type: string
     type: object
+  reservation.CheckTimeResp:
+    properties:
+      is_booked:
+        type: boolean
+    type: object
   reservation.GetAllMenuRes:
     properties:
       menu:
@@ -566,6 +571,46 @@ paths:
       security:
       - BearerAuth: []
       summary: Update reservation
+      tags:
+      - reservation
+  /reservation/check/{restaurant_id}/{reservation_time}:
+    post:
+      consumes:
+      - application/json
+      description: Check reservations
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: restaurant_id
+        required: true
+        type: string
+      - description: Reservation time
+        in: path
+        name: reservation_time
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.CheckTimeResp'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Check reservations
       tags:
       - reservation
   /reservation_order:

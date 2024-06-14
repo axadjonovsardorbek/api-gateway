@@ -452,6 +452,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/reservation/check/{restaurant_id}/{reservation_time}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Check reservations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reservation"
+                ],
+                "summary": "Check reservations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Restaurant ID",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Reservation time",
+                        "name": "reservation_time",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/reservation.CheckTimeResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/reservation/{id}": {
             "get": {
                 "security": [
@@ -1262,6 +1324,14 @@ const docTemplate = `{
                 },
                 "reservation_id": {
                     "type": "string"
+                }
+            }
+        },
+        "reservation.CheckTimeResp": {
+            "type": "object",
+            "properties": {
+                "is_booked": {
+                    "type": "boolean"
                 }
             }
         },
