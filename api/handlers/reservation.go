@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	pbp "api-gateway/genproto/payment"
 	pbr "api-gateway/genproto/reservation"
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -175,41 +175,71 @@ func (h *HTTPHandler) ReservationGetAll(c *gin.Context) {
 // @Tags reservation
 // @Accept json
 // @Produce json
-// @Param restaurant_id path string true "Restaurant ID"
-// @Param reservation_time path string true "Reservation time"
+// @Param chesk body pbr.CheckTimeReq true "Check data"
 // @Success 200 {object} pbr.CheckTimeResp
 // @Failure 400 {object} string "Invalid parameters"
 // @Failure 401 {object} string "Unauthorized"
 // @Failure 500 {object} string "Server error"
 // @Security BearerAuth
-// @Router /reservation/check/{restaurant_id}/{reservation_time} [post]
+// @Router /reservation/check/ [post]
 func (h *HTTPHandler) ReservationCheck(c *gin.Context) {
-	restaurantId := c.Param("restaurant_id")
-	timeParam := c.Param("reservation_time")
+	var req pbr.CheckTimeReq
 
-	if restaurantId == "" || timeParam == "" {
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	if req.RestauranId == "" || req.Time == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required path parameters"})
 		return
 	}
 
 	dateTimeLayout := "2006-01-02 15:04:05"
-	parsedDateTime, err := time.Parse(dateTimeLayout, timeParam)
+	parsedDateTime, err := time.Parse(dateTimeLayout, req.Time)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
 		return
 	}
 
-	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.Format("2006-01-02 15:04:05"), RestauranId: restaurantId})
+	resp, err := h.Reservation.CheckTime(context.Background(), &pbr.CheckTimeReq{Time: parsedDateTime.Format("2006-01-02 15:04:05"), RestauranId: req.RestauranId})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	fmt.Println("gggggggggggggggggggggggggggggggggggggG", resp.IsBooked)
-
 	if resp.IsBooked {
-		c.JSON(http.StatusOK, gin.H{"message": "Restaurant is available"})
-	} else {
 		c.JSON(http.StatusOK, gin.H{"error": "Restaurant is booked"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Restaurant is available"})
 	}
+}
+
+// Payment godoc
+// @Summary Process payment for a reservation
+// @Description Process payment for a reservation
+// @Tags reservation
+// @Accept json
+// @Produce json
+// @Param payment body pbp.PaymentCreateReq true "Payment data"
+// @Success 200 {object} pbp.PaymentGetByIdResp
+// @Failure 400 {object} string "Invalid parameters"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Server error"
+// @Security BearerAuth
+// @Router /reservations/{id}/payment [post]
+func (h *HTTPHandler) PaymentHandler(c *gin.Context) {
+	req := pbp.PaymentCreateReq{}
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	res, err := h.Payment.Create(context.Background(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }

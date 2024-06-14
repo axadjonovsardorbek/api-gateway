@@ -41,7 +41,7 @@ func (h *HTTPHandler) ReservationOrderCreate(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, gin.H{"message": "Restaurants are not the same!!!", "data": res})
 }
 
 // ReservationOrderGet handles getting a reservation order by ID.

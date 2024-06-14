@@ -452,7 +452,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/reservation/check/{restaurant_id}/{reservation_time}": {
+        "/reservation/check/": {
             "post": {
                 "security": [
                     {
@@ -472,18 +472,13 @@ const docTemplate = `{
                 "summary": "Check reservations",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Restaurant ID",
-                        "name": "restaurant_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Reservation time",
-                        "name": "reservation_time",
-                        "in": "path",
-                        "required": true
+                        "description": "Check data",
+                        "name": "chesk",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reservation.CheckTimeReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -1019,6 +1014,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/reservations/{id}/payment": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Process payment for a reservation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reservation"
+                ],
+                "summary": "Process payment for a reservation",
+                "parameters": [
+                    {
+                        "description": "Payment data",
+                        "name": "payment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payment.PaymentCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payment.PaymentGetByIdResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/restaurant": {
             "post": {
                 "security": [
@@ -1323,6 +1375,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "reservation_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "reservation.CheckTimeReq": {
+            "type": "object",
+            "properties": {
+                "restauran_id": {
+                    "type": "string"
+                },
+                "time": {
                     "type": "string"
                 }
             }

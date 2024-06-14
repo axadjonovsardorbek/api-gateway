@@ -23,6 +23,13 @@ definitions:
       reservation_id:
         type: string
     type: object
+  reservation.CheckTimeReq:
+    properties:
+      restauran_id:
+        type: string
+      time:
+        type: string
+    type: object
   reservation.CheckTimeResp:
     properties:
       is_booked:
@@ -573,22 +580,18 @@ paths:
       summary: Update reservation
       tags:
       - reservation
-  /reservation/check/{restaurant_id}/{reservation_time}:
+  /reservation/check/:
     post:
       consumes:
       - application/json
       description: Check reservations
       parameters:
-      - description: Restaurant ID
-        in: path
-        name: restaurant_id
+      - description: Check data
+        in: body
+        name: chesk
         required: true
-        type: string
-      - description: Reservation time
-        in: path
-        name: reservation_time
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/reservation.CheckTimeReq'
       produces:
       - application/json
       responses:
@@ -824,6 +827,42 @@ paths:
       security:
       - BearerAuth: []
       summary: Get all reservations
+      tags:
+      - reservation
+  /reservations/{id}/payment:
+    post:
+      consumes:
+      - application/json
+      description: Process payment for a reservation
+      parameters:
+      - description: Payment data
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/payment.PaymentCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payment.PaymentGetByIdResp'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Process payment for a reservation
       tags:
       - reservation
   /restaurant:
